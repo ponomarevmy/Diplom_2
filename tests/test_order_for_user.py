@@ -1,25 +1,16 @@
-import json
 import allure
 import requests
 from handlers import Handlers
 from urls import Urls
-from user_data import data_updated, data_correct
+from user_data import data_updated
 
 
 class TestGetOrderUser:
 
-    @allure.step("Получение токена для авторизации")
-    def get_token(self):
-        token = requests.post(Urls.MAIN_URL + Handlers.LOGIN, headers=Handlers.headers,
-                              data=json.dumps(data_correct))
-        new_token = token.json()['accessToken']
-        return new_token
-
     @allure.story("Запрос на получение заказов авторизованного пользователя")
-    def test_get_order_login_user(self):
-        new_token = self.get_token()
+    def test_get_order_login_user(self, get_token):
         response = requests.get(Urls.MAIN_URL + Handlers.GET_ORDERS,
-                                headers={'Authorization': new_token}, data=data_updated)
+                                headers={'Authorization': get_token}, data=data_updated)
         body = response
         assert response.status_code == 200 and body.json()['success'] == True
 
